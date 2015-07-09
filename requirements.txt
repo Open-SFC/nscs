@@ -1,0 +1,16 @@
+pbr>=0.5.21,<1.0
+babel
+configparser
+WSME>=0.5b6,<=0.5b6
+pecan==0.4.2
+oslo.config
+paste
+pastedeploy
+iso8601
+eventlet
+greenlet
+sqlalchemy>=0.9.7,<=0.9.99
+sqlalchemy-migrate
+routes
+python-keystoneclient
+mysql-python
