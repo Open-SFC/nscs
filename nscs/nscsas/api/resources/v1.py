@@ -1,12 +1,16 @@
 """Version 1 of the API.
 """
+import configparser
 import os
 import sys
 from pecan import expose, abort
 import wsmeext.pecan as wsme_pecan
 from pecan.rest import RestController
 
-from nscs.ocas_utils.openstack.common import log as logging
+from oslo_config import cfg
+from oslo_log import log as logging
+from oslo_log._i18n import _
+from oslo_utils import importutils
 
 LOG = logging.getLogger(__name__)
 
@@ -16,21 +20,20 @@ class V1Controller(RestController):
 
     @expose()
     def _lookup(self, res, *remainder):
-        base = os.path.dirname(os.path.abspath(__file__))
-        sys.path.insert(0, base)
-        if res in os.listdir(base):
-            if os.path.isdir(base + '/' + res) and os.path.exists(base + '/' + res+'/__init__.py'):
-                if res in sys.modules:
-                    del sys.modules[res]
-                pkg = __import__(res)
-                if hasattr(pkg, res.upper()+'Controller'):
-                    control = getattr(pkg, res.upper()+'Controller')
-                    sys.path = sys.path[1:]
-                    return control(), remainder
-                else:
-                    abort(404)
-        else:
-            abort(404)
+
+        modconf = configparser.ConfigParser()
+        confbase = os.path.dirname(cfg.CONF.config_file[0])
+        for cnf in os.listdir(confbase + '/modules'):
+            if '.conf' in cnf:
+                modconf.read(str(confbase + '/modules/' + cnf))
+                mod = modconf.get("DEFAULT","resource_module").split(":")
+                if mod[0] == res:
+                    pkg = importutils.try_import(mod[1])
+                    if pkg and hasattr(pkg, res.upper()+'Controller'):
+                        control = getattr(pkg, res.upper()+'Controller')
+                        return control(), remainder
+                    else:
+                        abort(404)
 
     @expose('json')
     def get(self):

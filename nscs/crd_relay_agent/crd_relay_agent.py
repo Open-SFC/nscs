@@ -21,11 +21,12 @@ import sys
 import socket
 import time
 
-from nscs.crdserver.common import config as logging_config
-from nscs.crdserver.common import topics
-from nscs.crdserver.openstack.common import context
-from nscs.crdserver.openstack.common import rpc
-from nscs.crdserver.openstack.common.rpc import dispatcher
+from nscs.crdservice.common import config as logging_config
+from nscs.crdservice.common import topics
+from nscs.crdservice.openstack.common import context
+from nscs.crdservice.openstack.common import rpc
+from nscs.crdservice.openstack.common.rpc import dispatcher
+from nscs.crdservice.openstack.common.rpc import proxy
 import remote_control
 
 logging.basicConfig()
@@ -42,16 +43,21 @@ agent_opts = [
 relay_opts = [
     cfg.StrOpt('admin_user', default="crd"),
     cfg.StrOpt('admin_password', default="password"),
-    cfg.StrOpt('admin_tenant', default="service"),
+    cfg.StrOpt('admin_tenant_name', default="service"),
     cfg.StrOpt('auth_url'),
     cfg.StrOpt('endpoint_url'),
 ]
 
-cfg.CONF.register_opts(relay_opts, "NWSDRIVER")
+node_opts = [
+    cfg.StrOpt('data_ip', default="127.0.0.1"),
+]
+
+cfg.CONF.register_opts(relay_opts, "nscs_authtoken")
 cfg.CONF.register_opts(agent_opts, "RAGENT")
+cfg.CONF.register_opts(node_opts, "node")
 
 
-class CrdRelayAgent(object):
+class CrdRelayAgent(proxy.RpcProxy):
     """
     CRD Relay Agent is used to relay all configuration related to Service VMs
     """
@@ -65,6 +71,8 @@ class CrdRelayAgent(object):
         :param root_helper: utility to use when running shell cmds.
         :param rpc: if True use RPC interface to interface with plugin.
         """
+        super(CrdRelayAgent, self).__init__(topic=topics.CRD_LISTENER,
+                                 default_version = self.RPC_API_VERSION)
         self.root_helper = root_helper
         self.polling_interval = polling_interval
         self.reconnect_interval = reconnect_interval
@@ -113,6 +121,7 @@ class CrdRelayAgent(object):
         return dispatcher.RpcDispatcher([self])
 
     def rpc_loop(self):
+        retx_msg=1
         while True:
             try:
                 start = time.time()
@@ -123,6 +132,14 @@ class CrdRelayAgent(object):
             elapsed = (time.time() - start)
             if elapsed < self.polling_interval:
                 time.sleep(self.polling_interval - elapsed)
+                if retx_msg % 60 == 1:
+                    node_details = self.make_msg('update_node_details',
+                            payload={'host': self.host,
+                                'data_ip': cfg.CONF.node.data_ip})
+                    self.cast(self.context, node_details, 
+                            topic=topics.CRD_LISTENER, 
+                            version=self.RPC_API_VERSION)
+                retx_msg += 1
             else:
                 LOG.info("Loop iteration exceeded interval (%s vs. %s)!",
                          self.polling_interval, elapsed)
@@ -146,8 +163,8 @@ def main():
     reconnect_interval = cfg.CONF.RAGENT.reconnect_interval
     rpc = cfg.CONF.RAGENT.rpc
     LOG.debug(_("username= %s,password=%s,auth_url=%s"),
-             cfg.CONF.NWSDRIVER.admin_user,
-             cfg.CONF.NWSDRIVER.admin_password, cfg.CONF.NWSDRIVER.auth_url)
+             cfg.CONF.nscs_authtoken.admin_user,
+             cfg.CONF.nscs_authtoken.admin_password, cfg.CONF.nscs_authtoken.auth_url)
 
     plugin = CrdRelayAgent(root_helper, polling_interval,
                            reconnect_interval, rpc)

@@ -18,7 +18,7 @@
 """Simple logging storage backend.
 """
 
-from nscs.ocas_utils.openstack.common import log
+from oslo_log import log
 from nscs.nscsas.storage import base
 
 LOG = log.getLogger(__name__)

@@ -18,11 +18,15 @@
 """SQLAlchemy storage backend."""
 
 from __future__ import absolute_import
+import configparser
 import os
 import sys
 
-from nscs.ocas_utils.openstack.common.db.sqlalchemy import session as sa_session
-from nscs.ocas_utils.openstack.common import log
+from oslo_config import cfg
+from oslo_db.sqlalchemy import session as sa_session
+from oslo_log import log
+from oslo_log._i18n import _
+from nscs.nscsas import storage
 from nscs.nscsas.storage import base
 from nscs.nscsas.storage.sqlalchemy.models import Base
 from nscs.nscsas.api import resources
@@ -39,39 +43,44 @@ class SQLAlchemyStorage(base.StorageEngine):
     """
 
     @staticmethod
-    def get_connection(conf):
+    def get_connection(engine):
         """Return a Connection instance based on the configuration settings.
         """
-        return Connection(conf)
+        return Connection(engine)
 
 
 class Connection(base.Connection):
     """SqlAlchemy connection."""
 
-    def __init__(self, conf):
-        url = conf.database.connection
+    def __init__(self, engine):
+        url = cfg.CONF.database.connection
         if url == 'sqlite://':
-            conf.database.connection = \
-                os.environ.get('OCAS_TEST_SQL_URL', url)
-        engine = sa_session.get_session().get_bind()
+            cfg.CONF.database.connection = \
+                os.environ.get('NSCSAS_TEST_SQL_URL', url)
 
-        dbase = os.path.dirname(os.path.abspath(resources.__file__))
-        sys.path.insert(0, dbase)
-        for res in os.listdir(dbase):
-            if os.path.isdir(dbase + '/' + res) and \
-                    os.path.exists(dbase + '/' + res + '/__init__.py') and\
-                    os.path.exists(dbase + '/' + res + '/db.py'):
+        modconf = configparser.ConfigParser()
+        confbase = os.path.dirname(cfg.CONF.config_file[0])
+        res_modules = list()
+        for cnf in os.listdir(confbase + '/modules'):
+            if '.conf' in cnf:
+                modconf.read(str(confbase + '/modules/' + cnf))
+                mod = modconf.get("DEFAULT","resource_module")
+                res_modules.append(str(mod.split(':')[1]))
+
+        for res in res_modules:
+            try:
                 __import__(res + '.db', fromlist=['*'])
+            except ImportError:
+                LOG.info(_("Invalid Resource. No DB schema found."))
 
         Base.metadata.create_all(engine)
-        sys.path = sys.path[1:]
 
     def upgrade(self):
         #TODO: Database migration scripts and Schema Upgradation
         pass
 
     def clear(self):
-        session = sa_session.get_session()
+        session = get_session()
         engine = session.get_bind()
         for table in reversed(Base.metadata.sorted_tables):
             engine.execute(table.delete())

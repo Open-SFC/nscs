@@ -18,13 +18,14 @@
 """
 Routines for configuring Neutron
 """
-
+import copy
 import os
+import re
 
-from oslo.config import cfg
+from oslo_config import cfg
 
-from nscs.ocas_utils.openstack.common import log as logging
-from nscs.ocas_utils.openstack.common.gettextutils import _
+from oslo_log import log as logging
+from oslo_i18n._i18n import _
 
 from nscs.nscsas.version import version as nscsas_version
 
@@ -39,6 +40,21 @@ core_opts = [
 
 # Register the configuration options
 cfg.CONF.register_opts(core_opts)
+
+
+def get_all_configs(conf_path):
+    confs = []
+    for cf in os.listdir(conf_path):
+        if re.search(r'/.conf$/', cf):
+            confs.append(cf)
+    return confs
+
+
+def parse_configs(conf_path):
+    conf_args = []
+    for cf in get_all_configs(conf_path):
+        conf_args.extend(['--config-file', cf])
+    return config_args
 
 
 def parse(args):

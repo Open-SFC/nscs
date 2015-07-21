@@ -18,8 +18,9 @@
 # under the License.
 
 import threading
-from oslo.config import cfg
+from oslo_config import cfg
 from pecan import hooks
+from nscs.nscsas import storage
 
 
 class ConfigHook(hooks.PecanHook):
@@ -33,13 +34,11 @@ class ConfigHook(hooks.PecanHook):
 
 class DBHook(hooks.PecanHook):
 
-    def __init__(self, storage_engine, storage_connection):
-        self.storage_engine = storage_engine
-        self.storage_connection = storage_connection
+    def __init__(self):
+        storage.get_connection()
 
     def before(self, state):
-        state.request.storage_engine = self.storage_engine
-        state.request.storage_conn = self.storage_connection
+        state.request.storage_session = storage.get_session()
 
 
 class TranslationHook(hooks.PecanHook):

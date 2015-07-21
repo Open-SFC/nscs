@@ -2,10 +2,9 @@ import eventlet
 import socket
 import sys
 
-from oslo.config import cfg
+from oslo_config import cfg
 
-from nscs.ocas_utils.openstack.common import gettextutils
-from nscs.ocas_utils.openstack.common import log
+from oslo_log import log
 
 
 cfg.CONF.register_opts([
@@ -20,9 +19,8 @@ cfg.CONF.register_opts([
 
 def prepare_service(argv=None):
     eventlet.monkey_patch()
-    gettextutils.install('nscsas', lazy=False)
-    cfg.set_defaults(log.log_opts,
-                     default_log_levels=['amqplib=WARN',
+    log.register_options(cfg.CONF)
+    log.set_defaults(default_log_levels=['amqplib=WARN',
                                          'qpid.messaging=INFO',
                                          'sqlalchemy=WARN',
                                          'stevedore=INFO',
@@ -31,4 +29,4 @@ def prepare_service(argv=None):
     if argv is None:
         argv = sys.argv
     cfg.CONF(argv[1:], project='nscsas')
-    log.setup('nscsas')
+    log.setup(cfg.CONF, 'nscsas')

@@ -22,9 +22,9 @@ import re
 from cliff import lister
 from cliff import show
 
-from nscs.crd_consumer.client.common import command
-from nscs.crd_consumer.client.common import rm_exceptions as exceptions
-from nscs.crd_consumer.client.common import utils
+from crd_consumer.client.common import command
+from crd_consumer.client.common import rm_exceptions as exceptions
+from crd_consumer.client.common import utils
 
 HEX_ELEM = '[0-9A-Fa-f]'
 UUID_PATTERN = '-'.join([HEX_ELEM + '{8}', HEX_ELEM + '{4}',

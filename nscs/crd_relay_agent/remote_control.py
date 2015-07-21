@@ -7,9 +7,9 @@ import time
 import eventlet
 
 from oslo.config import cfg
-from nscs.crdserver.openstack.common import log as logging
-from nscs.crdserver.openstack.common.rpc import proxy
-from nscs.crdserver.openstack.common import context
+from nscs.crdservice.openstack.common import log as logging
+from nscs.crdservice.openstack.common.rpc import proxy
+from nscs.crdservice.openstack.common import context
 
 LOG = logging.getLogger(__name__)
 INSTANCES_PATH = '/var/lib/nova/instances'
@@ -27,11 +27,11 @@ class RemoteControl(proxy.RpcProxy):
         # LOG.debug(_('Instantiating RelayConfig'))
         super(RemoteControl, self).__init__(topic="generate_relay_config", default_version=self.RPC_API_VERSION)
         self.port_fds = {}
-        self.user = cfg.CONF.NWSDRIVER.admin_user
-        self.password = cfg.CONF.NWSDRIVER.admin_password
-        self.tenant = cfg.CONF.NWSDRIVER.admin_tenant
-        self.auth_url = cfg.CONF.NWSDRIVER.auth_url
-        self.endpoint_url = cfg.CONF.NWSDRIVER.endpoint_url
+        self.user = cfg.CONF.nscs_authtoken.admin_user
+        self.password = cfg.CONF.nscs_authtoken.admin_password
+        self.tenant = cfg.CONF.nscs_authtoken.admin_tenant_name
+        self.auth_url = cfg.CONF.nscs_authtoken.auth_url
+        self.endpoint_url = cfg.CONF.nscs_authtoken.endpoint_url
         self.epoll = select.epoll()
         self.poll_fn = eventlet.spawn_n(self.poller)
         self.consumer_context = context.RequestContext('crd', 'crd',
@@ -76,7 +76,7 @@ class RemoteControl(proxy.RpcProxy):
                 except Exception, msg:
                     LOG.error(_('Exception...\n\t%s'), msg)
         except SyntaxError:
-            LOG.debug(_('Incomplete data received from VM.'))
+            LOG.debug(_('Incomplete data received from VM.\n\n%s\n\n'), str(data))
             self.port_fds[fileno]['tmp_data'] += data
             return
 
@@ -127,7 +127,8 @@ class RemoteControl(proxy.RpcProxy):
         # Fetch FD from port details
         fd = port['fd']
         #Delete FD from port details
-        self.port_fds[fd.fd.fileno()]['fd'] = None
+        print fd
+        self.port_fds[fd.fileno()]['fd'] = None
         del self.port_fds[fd.fileno()]
         # De register from epoll
         self.epoll.unregister(fd.fileno())

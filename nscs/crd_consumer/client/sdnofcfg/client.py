@@ -21,7 +21,7 @@ from nscs.crd_consumer.client.common import utils
 import configparser
 
 config=configparser.ConfigParser()
-crdclient_conf = "/usr/local/nscs/etc/nscsas/consumer.conf"
+crdclient_conf = "/usr/local/etc/nscsas/consumer.conf"
 config.read(crdclient_conf)
 try:
     classes=str(config.get('SDNOFCFG', 'application_classes'))

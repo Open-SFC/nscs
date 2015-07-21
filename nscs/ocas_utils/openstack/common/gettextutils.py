@@ -21,7 +21,7 @@ gettext for openstack-common modules.
 
 Usual usage in an openstack.common module:
 
-    from ocas_utils.openstack.common.gettextutils import _
+    from nscs.ocas_utils.openstack.common.gettextutils import _
 """
 
 import copy

@@ -23,7 +23,7 @@ import datetime
 import math
 import six
 
-from nscs.ocas_utils.openstack.common import timeutils
+from oslo_utils import timeutils
 
 
 def iter_period(start, end, period):

@@ -386,14 +386,16 @@ class CrdShell(App):
                 raise exc.CommandError(
                     "You must provide a service URL via"
                     " either --os-url or env[OS_URL]")
-        print "###################"
-        print self.command_name
+        #print "###################"
+        #print self.command_name
         temp1 = str(COMMANDS['2.0'][self.command_name])
         temp2 = temp1.split("'")
         app_class = str(temp2[1])
         app_name = str(app_class.split('.')[0])
-        print app_name
-        print "###################"
+        #print app_name
+	#print self.options.os_url
+	#print self.options.os_auth_url
+        #print "###################"
         self.app_name = app_name
         self.api_version = {app_name: self.api_version}
 

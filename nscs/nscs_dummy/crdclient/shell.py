@@ -21,13 +21,13 @@ class DummyCommands():
     COMMANDS = {
         # Dummy 
         'list-dummys': utils.import_class(
-            'nscs_dummy.crdclient.crd.v2_0.dummy.ListDummy'),
+            'nscs.nscs_dummy.crdclient.crd.v2_0.dummy.ListDummy'),
         'create-dummy' : utils.import_class(
-            'nscs_dummy.crdclient.crd.v2_0.dummy.CreateDummy'),
+            'nscs.nscs_dummy.crdclient.crd.v2_0.dummy.CreateDummy'),
         'update-dummy' : utils.import_class(
-            'nscs_dummy.crdclient.crd.v2_0.dummy.UpdateDummy'),
+            'nscs.nscs_dummy.crdclient.crd.v2_0.dummy.UpdateDummy'),
         'delete-dummy' : utils.import_class(
-            'nscs_dummy.crdclient.crd.v2_0.dummy.DeleteDummy'),
+            'nscs.nscs_dummy.crdclient.crd.v2_0.dummy.DeleteDummy'),
         'show-dummy' : utils.import_class(
-            'nscs_dummy.crdclient.crd.v2_0.dummy.ShowDummy'),
+            'nscs.nscs_dummy.crdclient.crd.v2_0.dummy.ShowDummy'),
     }

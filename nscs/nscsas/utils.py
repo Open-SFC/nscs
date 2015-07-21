@@ -23,7 +23,7 @@ import datetime
 import decimal
 from netaddr import IPNetwork
 
-from nscs.ocas_utils.openstack.common import timeutils
+from oslo_utils import timeutils
 
 
 def recursive_keypairs(d, separator=':'):

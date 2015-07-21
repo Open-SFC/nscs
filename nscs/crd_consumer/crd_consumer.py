@@ -23,6 +23,8 @@
 import sys
 import socket
 import time
+import os
+import re
 
 import eventlet
 
@@ -37,9 +39,10 @@ from nscs.ocas_utils.openstack.common import log as logging
 from nscs.ocas_utils.openstack.common import importutils
 from nscs.ocas_utils.openstack.common import lockutils
 
-from nscs.client.common import rm_exceptions as exceptions
+from client.common import rm_exceptions as exceptions
 
-from nscs.client import ocas_client
+from client import ocas_client
+import configparser
 
 LOG = logging.getLogger(__name__)
 
@@ -109,9 +112,24 @@ class CRDConsumer(proxy.RpcProxy):
         self.conn.close()
 
     def _load_application_plugins(self):
-        app_plugins = str(cfg.CONF.APPLICATIONS.application_plugins).split(',')
+        modconf = configparser.ConfigParser()
+        confpath = cfg.CONF.config_file[0]
+        confpath = confpath.replace('nscs.conf', 'consumer_modules/')
+        confbase = os.path.dirname(confpath)
+        moduleconfs =  os.listdir(confbase)
+        paths = ''
+        for cnf in moduleconfs:
+          if re.search(r'(\.conf)$', cnf):
+                cnf = str(confpath+cnf)
+                modconf.read(cnf)
+                ext = str(modconf.get("APPLICATIONS","application_plugins"))
+                paths = paths+ext+','
+        #app_plugins = str(cfg.CONF.APPLICATIONS.application_plugins).split(',')
+        LOG.debug(_("Paths: %s"), str(paths))
+        app_plugins = paths.split(',')
         LOG.debug(_("Loading Applications plugins: %s"), app_plugins)
         for provider in app_plugins:
+            LOG.debug(_("Provider: %s"), str(provider))
             if provider == '':
                 continue
             try:
@@ -161,6 +179,7 @@ class CRDConsumer(proxy.RpcProxy):
                 if obj:
                     LOG.info(_("Getting Delta for INIT message running in Application: %s...."), str(app_plugin))
                     app_delta = obj(consumer=consumer)
+                    #app_delta = obj()
                     LOG.info(_("Delta in Application %s = %s...."), str(app_plugin), str(app_delta))
                     delta_msg.update(app_delta)
                     time.sleep(1)

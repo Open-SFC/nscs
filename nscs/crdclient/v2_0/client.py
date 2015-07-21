@@ -123,7 +123,7 @@ class Client(object):
 
     Example::
 
-        >>> from crdclient.v2_0 import client
+        >>> from nscs.crdclient.v2_0 import client
         >>> crd = client.Client(username=USER,
                                      password=PASS,
                                      tenant_name=TENANT_NAME,
@@ -155,6 +155,7 @@ class Client(object):
     def __init__(self, **kwargs):
         """ Initialize a new client for the Crd v2.0 API. """
         super(Client, self).__init__()
+        _logger.debug("Kargs = %s", str(kwargs))
         self.httpclient = HTTPClient(**kwargs)
         self.version = '2.0'
         self.format = 'json'

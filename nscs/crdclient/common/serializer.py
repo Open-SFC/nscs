@@ -344,7 +344,7 @@ class XMLDeserializer(TextDeserializer):
         return self.default(datastring)
 
 
-# NOTE(maru): this class is duplicated from crd.wsgi
+# NOTE(maru): this class is duplicated from nscs.crdservice.wsgi
 class Serializer(object):
     """Serializes and deserializes dictionaries to certain MIME types."""
 

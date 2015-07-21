@@ -14,7 +14,7 @@
 #    under the License.
 
 import logging
-from nscs.crd_consumer.client import ocas_client
+from crd_consumer.client import ocas_client
 
 _logger = logging.getLogger(__name__)
 

@@ -13,7 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from nscs.crd_consumer.client.common import utils
+from crd_consumer.client.common import utils
 
 class DummyCommands():
     """"""
@@ -21,13 +21,13 @@ class DummyCommands():
     COMMANDS = {
         ###Networks
         'list-dummys': utils.import_class(
-            'nscs_dummy.crdconsumer.client.sdnofcfg.v1.dummy.ListDummy'),
+            'nscs.nscs_dummy.crdconsumer.client.sdnofcfg.v1.dummy.ListDummy'),
         'create-dummy' : utils.import_class(
-            'nscs_dummy.crdconsumer.client.sdnofcfg.v1.dummy.CreateDummy'),
+            'nscs.nscs_dummy.crdconsumer.client.sdnofcfg.v1.dummy.CreateDummy'),
         'delete-dummy' : utils.import_class(
-            'nscs_dummy.crdconsumer.client.sdnofcfg.v1.dummy.DeleteDummy'),
+            'nscs.nscs_dummy.crdconsumer.client.sdnofcfg.v1.dummy.DeleteDummy'),
         'show-dummy' : utils.import_class(
-            'nscs_dummy.crdconsumer.client.sdnofcfg.v1.dummy.ShowDummy'),
+            'nscs.nscs_dummy.crdconsumer.client.sdnofcfg.v1.dummy.ShowDummy'),
         'update-dummy' : utils.import_class(
-            'nscs_dummy.crdconsumer.client.sdnofcfg.v1.dummy.UpdateDummy'),
+            'nscs.nscs_dummy.crdconsumer.client.sdnofcfg.v1.dummy.UpdateDummy'),
     }

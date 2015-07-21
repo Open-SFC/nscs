@@ -1,6 +1,6 @@
 import collections
 
-from nscs.ocas_utils.openstack.common import log as logging
+from oslo_log import log as logging
 from nscs.nscsas.api import constants
 
 

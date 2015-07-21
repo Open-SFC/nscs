@@ -1,3 +1,4 @@
+from oslo_config import cfg
 # Server Specific Configurations
 server = {
     'port': '20202',
@@ -6,9 +7,8 @@ server = {
 
 # Pecan Application Configurations
 app = {
-    'root': 'nscsas.api.resources.root.RootController',
-    'modules': ['nscsas.api'],
+    'root': 'nscs.nscsas.api.resources.root.RootController',
+    'modules': ['nscs.nscsas.api'],
     'static_root': '%(confdir)s/public',
     'template_path': '%(confdir)s/nscsas/api/templates',
-    'debug': False,
 }

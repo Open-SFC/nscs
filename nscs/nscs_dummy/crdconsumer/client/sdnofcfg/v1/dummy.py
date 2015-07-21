@@ -18,12 +18,12 @@
 import argparse
 import logging
 
-from nscs.crd_consumer.client.common import utils
-from nscs.crd_consumer.client.sdnofcfg.v1 import CreateCommand
-from nscs.crd_consumer.client.sdnofcfg.v1 import DeleteCommand
-from nscs.crd_consumer.client.sdnofcfg.v1 import ListCommand
-from nscs.crd_consumer.client.sdnofcfg.v1 import ShowCommand
-from nscs.crd_consumer.client.sdnofcfg.v1 import UpdateCommand
+from crd_consumer.client.common import utils
+from crd_consumer.client.sdnofcfg.v1 import CreateCommand
+from crd_consumer.client.sdnofcfg.v1 import DeleteCommand
+from crd_consumer.client.sdnofcfg.v1 import ListCommand
+from crd_consumer.client.sdnofcfg.v1 import ShowCommand
+from crd_consumer.client.sdnofcfg.v1 import UpdateCommand
 
 
 class ListDummy(ListCommand):

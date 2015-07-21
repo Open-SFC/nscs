@@ -255,10 +255,10 @@ import sqlalchemy.orm
 from sqlalchemy.pool import NullPool, StaticPool
 from sqlalchemy.sql.expression import literal_column
 
-from ocas_utils.openstack.common.db import exception
-from ocas_utils.openstack.common.gettextutils import _  # noqa
-from ocas_utils.openstack.common import log as logging
-from ocas_utils.openstack.common import timeutils
+from nscs.ocas_utils.openstack.common.db import exception
+from nscs.ocas_utils.openstack.common.gettextutils import _  # noqa
+from nscs.ocas_utils.openstack.common import log as logging
+from nscs.ocas_utils.openstack.common import timeutils
 
 sqlite_db_opts = [
     cfg.StrOpt('sqlite_db',

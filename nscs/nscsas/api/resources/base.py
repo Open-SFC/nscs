@@ -6,11 +6,10 @@ from wsme import types as wtypes
 from netaddr.ip import IPNetwork, IPAddress
 from netaddr.core import AddrFormatError
 
-from nscs.ocas_utils.openstack.common import log as logging
+from oslo_log import log as logging
+from oslo_i18n._i18n import _
 
 LOG = logging.getLogger(__name__)
-#TODO: Remove below gettextutils line during release
-from ocas_utils.openstack.common.gettextutils import _
 
 
 class EntityNotFound(Exception):

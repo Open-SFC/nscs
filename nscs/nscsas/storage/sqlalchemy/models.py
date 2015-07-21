@@ -3,17 +3,20 @@
 # Author: Purandhar Sairam Mannidi <sairam.mp@freescale.com>
 #
 """
-SQLAlchemy models for OCAS data.
+SQLAlchemy models for NSCSAS data.
 """
 
 import json
 import urlparse
 
-from oslo.config import cfg
+from oslo_config import cfg
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, DateTime
 from sqlalchemy.dialects.mysql import DECIMAL
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.types import TypeDecorator, DATETIME
+from oslo_db.sqlalchemy import session as sa_session
+import uuid
+
 from nscs.nscsas import utils
 
 sql_opts = [
@@ -23,6 +26,25 @@ sql_opts = [
 ]
 
 cfg.CONF.register_opts(sql_opts)
+
+_FACADE = None
+
+
+def _create_facade_lazily():
+    global _FACADE
+    if _FACADE is None:
+        _FACADE = sa_session.EngineFacade.from_config(cfg.CONF)
+    return _FACADE
+
+
+def get_engine():
+    facade = _create_facade_lazily()
+    return facade.get_engine()
+
+
+def get_session(**kwargs):
+    facade = _create_facade_lazily()
+    return facade.get_session(**kwargs)
 
 
 def table_args():
@@ -76,8 +98,8 @@ class PreciseTimestamp(TypeDecorator):
         return value
 
 
-class OCASBase(object):
-    """Base class for OCAS Models."""
+class NSCSASBase(object):
+    """Base class for NSCSAS Models."""
     __table_args__ = table_args()
     __table_initialized__ = False
 
@@ -93,4 +115,4 @@ class OCASBase(object):
             setattr(self, k, v)
 
 
-Base = declarative_base(cls=OCASBase)
+Base = declarative_base(cls=NSCSASBase)

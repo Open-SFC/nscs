@@ -1,17 +1,17 @@
 import logging
 import os
-from oslo.config import cfg
+from oslo_config import cfg
 import pecan
 
 #TODO: Implement ACL functionality if required
-#from nscsas.api import acl
+#from nscs.nscsas.api import acl
 from nscs.nscsas.api import config as api_config
 from nscs.nscsas.api import hooks
 from nscs.nscsas.api import middleware
 from nscs.nscsas import service
 from nscs.nscsas import storage
 #TODO: replace with oslo.i18n
-from nscs.ocas_utils.openstack.common import log
+from oslo_log import log
 from wsgiref import simple_server
 
 LOG = log.getLogger(__name__)
@@ -28,13 +28,9 @@ def get_pecan_config():
 
 
 def setup_app(pecan_config=None, extra_hooks=None):
-    storage_engine = storage.get_engine(cfg.CONF)
     # FIXME: Replace DBHook with a hooks.TransactionHook
     app_hooks = [hooks.ConfigHook(),
-                 hooks.DBHook(
-                     storage_engine,
-                     storage_engine.get_connection(cfg.CONF),
-                 ),
+                 hooks.DBHook(),
                  hooks.TranslationHook()]
     if extra_hooks:
         app_hooks.extend(extra_hooks)
