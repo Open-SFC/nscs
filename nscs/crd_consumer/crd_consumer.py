@@ -118,7 +118,7 @@ class CRDConsumer(proxy.RpcProxy):
         confbase = os.path.dirname(confpath)
         moduleconfs =  os.listdir(confbase)
         paths = ''
-        for cnf in moduleconfs:
+        for cnf in sorted(moduleconfs):
           if re.search(r'(\.conf)$', cnf):
                 cnf = str(confpath+cnf)
                 modconf.read(cnf)
