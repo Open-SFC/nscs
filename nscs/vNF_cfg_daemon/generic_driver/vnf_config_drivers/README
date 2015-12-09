@@ -1,0 +1,12 @@
+Sample files to configure Network Functions in VMs.
+
+The Following are the file and class naming guidelines.
+
+[1] The class name of the main Network Function configuration API class
+    must be same as file name with first alphabet capitalized.
+[2] Every class must define 
+    [a] get_vnf_name() function to return the name
+        of the vnf. This name and the 'slug' parameter in the request must be
+        same.
+    [b] handle_vnf_config(request_dict) function to hold the actual logic
+        to process the network function configuration.
